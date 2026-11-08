@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="mk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Електро Калкулатор Pro</title>
+<style>
+:root{--bg:#0b0d12;--card:#141922;--tx:#e9edf3;--mu:#8b95a5;--ac:#ffb300;--cy:#22d3ee;--bd:#252c3a;--ok:#34d399;--bad:#ff6b6b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f5f7;--card:#fff;--tx:#14181f;--mu:#667085;--ac:#d98900;--cy:#0891b2;--bd:#dde1e8;--ok:#0a7d3c;--bad:#c62828}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--tx);font:16px system-ui,sans-serif}
+body{padding:12px;max-width:600px;margin:auto}
+h1{font-size:19px;margin:4px 0 2px}.sub{color:var(--mu);font-size:13px;margin-bottom:10px}
+nav{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
+nav button{white-space:nowrap;padding:9px 13px;border:1px solid var(--bd);background:var(--card);color:var(--mu);border-radius:10px;font:inherit;font-size:14px}
+nav button.on{color:var(--cy);border-color:var(--cy)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{display:block;font-size:12px;color:var(--mu);margin-bottom:2px}
+input,select{width:100%;padding:9px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}
+input[type=range]{padding:0;accent-color:var(--ac)}
+.k3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.k{border:1px solid var(--bd);border-radius:12px;padding:8px}.k small{color:var(--mu);font-size:11px;text-transform:uppercase}
+.k b{display:block;font:700 22px ui-monospace,monospace;margin:2px 0}
+.c1{color:var(--cy)}.c2{color:var(--ac)}.c3{color:var(--ok)}
+.row{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--bd);padding:6px 0;font-size:15px}
+.bar{height:9px;background:var(--bd);border-radius:5px;overflow:hidden;margin:4px 0 10px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ok),var(--ac))}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.note{font-size:12.5px;color:var(--mu);margin-top:8px;line-height:1.4}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th,td{padding:7px 4px;text-align:left;border-bottom:1px solid var(--bd)}tr.sel td{background:rgba(255,179,0,.15)}tr{cursor:pointer}
+.tw{overflow-x:auto}svg{width:100%;height:auto}
+section{display:none}section.on{display:block}
+</style></head><body>
+<h1>⚡ Електро Калкулатор Pro</h1><div class="sub">Кабел, осигурувач, FI, пренапонска заштита, мотори</div>
+<nav id="nav"><button data-t="a" class="on">Калкулатор</button><button data-t="t">Табела</button><button data-t="s">Шема</button><button data-t="p">SPD</button><button data-t="m">Мотори</button><button data-t="f">f(x)</button></nav>
+
+<div class="card" id="inp"><div class="grid">
+<div><label>Систем</label><select id="ph"><option value="1">Монофазен 230 V</option><option value="3" selected>Трифазен 400 V</option></select></div>
+<div><label>Моќност (kW)</label><input id="p" type="number" value="48" step="0.1"></div>
+<div><label>cos φ</label><input id="cos" type="number" value="0.88" step="0.01"></div>
+<div><label>Материјал</label><select id="mat"><option value="cu">Бакар (Cu)</option><option value="al">Алуминиум (Al)</option></select></div>
+<div><label>Изолација</label><select id="ins"><option value="p">PVC</option><option value="x">XLPE</option></select></div>
+<div><label>Поставување</label><select id="m"><option value="B">Во ѕид / цевка (B)</option><option value="C" selected>На ѕид / регал (C)</option><option value="E">Кабелска скара (E)</option><option value="D">Во земја (D)</option></select></div>
+<div><label>Амбиент °C</label><select id="t"><option>25</option><option selected>30</option><option>35</option><option>40</option><option>45</option><option>50</option></select></div>
+<div><label>Кабли во група</label><select id="g"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+<div><label>Пад на напон лимит</label><select id="dl"><option value="3">3% осветлување</option><option value="5" selected>5% сила</option></select></div>
+<div><label>Ik на почеток (kA)</label><select id="ik"><option>3</option><option>6</option><option selected>10</option><option>16</option><option>25</option><option>36</option><option>50</option></select></div>
+<div><label>Нула кај автомат</label><select id="pl"><option value="o">Без прекинување (3P)</option><option value="n">Со нула (3P+N / 4P)</option></select></div>
+<div><label>Резервно напојување</label><select id="bk"><option value="0">Нема</option><option value="g">Агрегат</option><option value="d">Втор довод (две мрежи)</option></select></div>
+<div><label>Должина: <b id="lv">35</b> m</label><input id="len" type="range" min="1" max="300" value="35"></div>
+</div></div>
+
+<section id="a" class="on"><div class="card" id="a_out"></div></section>
+<section id="t"><div class="card tw" id="t_out"></div></section>
+<section id="s"><div class="card" id="s_out"></div></section>
+<section id="p"><div class="card"><div class="grid">
+<div><label>Мрежа</label><select id="net"><option>TN-C-S / TN-S</option><option>TT</option></select></div>
+<div><label>Приклучок</label><select id="oh"><option value="1">Надземна линија</option><option value="0">Подземен кабел</option></select></div>
+<div><label>Громобран</label><select id="lps"><option value="0">Не</option><option value="1">Да</option></select></div>
+<div><label>Осетлива опрема</label><select id="sens"><option value="1">Да</option><option value="0">Не</option></select></div></div></div>
+<div class="card" id="p_out"></div></section>
+<section id="m"><div class="card"><div class="grid">
+<div><label>Моќност на мотор (kW)</label><input id="mp" type="number" value="7.5" step="0.1"></div>
+<div><label>Фаза</label><select id="mph"><option value="3">Трифазен</option><option value="1">Монофазен</option></select></div>
+<div><label>cos φ</label><input id="mc" type="number" value="0.85" step="0.01"></div>
+<div><label>Корисност η</label><input id="me" type="number" value="0.88" step="0.01"></div>
+<div style="grid-column:span 2"><label>Стартување</label><select id="ms"><option value="7">Директно (≈7×In)</option><option value="2.5">Ѕвезда-триаголник (≈2.5×In)</option><option value="3.5">Софт стартер (≈3.5×In)</option><option value="1.5">Frequency inverter (≈1.5×In)</option></select></div>
+</div><div class="note">Кабелот се пресметува со поставките од горе (материјал, поставување, должина).</div></div><div class="card" id="m_out"></div></section>
+<section id="f"><div class="card">
+<div class="row"><span>Монофазно</span><b>I = P / (U·cosφ·η)</b></div>
+<div class="row"><span>Трифазно</span><b>I = P / (√3·U·cosφ·η)</b></div>
+<div class="row"><span>ΔU 1ф</span><b>2·L·I·ρ·cosφ / S</b></div>
+<div class="row"><span>ΔU 3ф</span><b>√3·L·I·ρ·cosφ / S</b></div>
+<div class="row"><span>ρ Cu / Al</span><b>0.0225 / 0.036</b></div>
+<div class="row"><span>Заштита</span><b>Ib ≤ In ≤ Iz</b></div>
+<div class="row"><span>FI</span><b>IΔn 30 mA, In(FI) ≥ In(автомат)</b></div>
+<p class="note">Табели по IEC 60364-5-52 (приближни, PVC 70°C Cu; XLPE ×1.25, Al ×0.78). Не е замена за проект од лиценциран инженер и важечките прописи.</p></div></section>
+
+<script>
+const $=i=>document.getElementById(i),v=i=>$(i).value,f=(x,d=1)=>(+x).toFixed(d);
+const SEC=[1.5,2.5,4,6,10,16,25,35,50,70,95,120,150,185,240,300];
+const T={B:[[15.5,21,28,36,50,68,89,110,134,171,207,239,262,296,346,394],[13.5,18,24,31,42,56,73,89,108,136,164,188,216,245,286,328]],
+C:[[19.5,27,36,46,63,85,112,138,168,213,258,299,344,392,461,530],[17.5,24,32,41,57,76,96,119,144,184,223,259,299,341,403,464]],
+E:[[22,30,40,51,70,94,119,148,180,232,282,328,379,434,514,593],[18.5,25,34,43,60,80,101,126,153,196,238,276,319,364,430,497]],
+D:[[22,29,38,47,63,81,104,125,148,183,216,246,278,312,359,408],[18,24,31,39,52,67,86,103,122,151,179,203,230,258,297,336]]};
+const TP={25:1.06,30:1,35:.94,40:.87,45:.79,50:.71},TX={25:1.04,30:1,35:.96,40:.91,45:.87,50:.82},G={1:1,2:.8,3:.7,4:.65,5:.6,6:.57};
+const STD=[6,10,13,16,20,25,32,40,50,63,80,100,125,160,200,250,315,400,500,630],FIS=[25,40,63,80,100,125];
+const cfg=ph=>({m:v('m'),n:ph==1?2:3,mat:v('mat'),ins:v('ins'),t:v('t'),g:v('g')});
+const iz=(S,o,n=1)=>{let x=T[o.m][o.n===2?0:1][SEC.indexOf(S)];if(o.ins==='x')x*=1.25;if(o.mat==='al')x*=.78;return x*(o.ins==='x'?TX:TP)[o.t]*G[Math.min(6,o.g*n)]*n};
+const drop=(S,Ib,ph,cos,n=1)=>{const U=ph==1?230:400,r=v('mat')==='cu'?.0225:.036;return (ph==1?2:Math.sqrt(3))*+v('len')*Ib*r*cos/S/n/U*100};
+function pick(Ib,In,ph,cos){const o=cfg(ph);for(let n=1;n<=4;n++)for(const S of SEC){if((v('mat')==='al'||n>1)&&S<16)continue;const z=iz(S,o,n);if(z>=In&&drop(S,Ib,ph,cos,n)<=+v('dl'))return{S,n,Iz:z,d:drop(S,Ib,ph,cos,n)}}return null}
+const lab=(r,ph)=>(r.n>1?r.n+'×(':'')+(ph==1?3:5)+'×'+r.S+(r.n>1?')':'');
+function calc(){const ph=+v('ph'),U=ph==1?230:400,cos=+v('cos')||1,Ib=+v('p')*1000/((ph==1?1:Math.sqrt(3))*U*cos),In=STD.find(x=>x>=Ib)||0;
+ const r=In?pick(Ib,In,ph,cos):null;return{ph,U,cos,Ib,In,r,fi:FIS.find(x=>x>=In)||0}}
+const MF=[160,250,400,630,800,1000,1250,1600];
+function brk(c){const m=c.In>125,n=v('pl')==='n',pol=c.ph==1?(n?'2P':'1P+N'):(n?'4P':'3P');
+ return{m,pol,a:m?(MF.find(x=>x>=c.In)||0):c.In,lab:m?'MCCB '+(MF.find(x=>x>=c.In)||'>1600')+' A':'C'+c.In+' A',fi:c.fi?'FI '+c.fi+' A / 30 mA':'RCD блок/реле + торoид'}}
+function sc(c){const r=c.r,al=v('mat')==='al',pc=al?.0286:.0178,ph_=al?.0446:.0273,L=+v('len'),n=r.n,S=r.S;
+ const pe=S<=16?S:S<=35?16:S/2,Zs=230/(+v('ik')*1000),Rc=pc*L/(S*n),Ik3=230/(Zs+Rc),Zl=2*Zs+ph_*L*(1/(S*n)+1/(pe*n)),Ik1=.8*230/Zl,Im=10*c.In;
+ const icu=[6,10,16,25,36,50,70].find(x=>x>=+v('ik'))||70,okk=Ik1>=1.2*Im;
+ return row('PE проводник',(pe<S?f(pe,0):S)+' mm²')+row('Ik на крај на кабел (макс.)',f(Ik3/1000,2)+' kA')+row('Мин. Ik (фаза-PE)',f(Ik1/1000,2)+' kA')+row('Моментна Im ≈ 10×In',Im+' A')+row('Исклучување (куса врска)','<span class="'+(okk?'ok':'bad')+'">'+(okk?'OK':'ризик, пократка траса или поголем пресек')+'</span>')+row('Потребен Icu',icu+' kA')}
+const ATSL=[16,25,32,40,50,63,80,100,125,160,200,250,315,400,500,630];
+function ats(c){if(v('bk')==='0'||!c.In)return null;const a=ATSL.find(x=>x>=c.In)||0,kva=(+v('p')/c.cos)*1.25;return{a,pol:c.ph==1?'2P':'4P',kva,g:v('bk')==='g'}}
+const row=(a,b)=>`<div class="row"><span>${a}</span><b>${b}</b></div>`;
+const k=(l,b,s,c)=>`<div class="k"><small>${l}</small><b class="${c}">${b}</b><small>${s}</small></div>`;
+
+function A(){const c=calc();$('lv').textContent=v('len');
+ if(!c.r){$('a_out').innerHTML=row('Ib',f(c.Ib)+' A')+'<p class="bad">Нема решение ни со 4 паралелни кабли до 300 mm². Скрати ја трасата или користи сабирница/шини.</p>';return}
+ const {S,Iz,d}=c.r,l=+v('dl');
+ $('a_out').innerHTML=`<div class="k3">${k('Кабел',c.r.n>1?c.r.n+'× паралелно':S+' mm²',lab(c.r,c.ph)+' mm² '+(v('mat')==='cu'?'Cu':'Al'),'c1')}${k('Автомат',brk(c).lab,brk(c).pol+' · '+brk(c).fi,'c2')}${k('Струја Ib',f(c.Ib,0)+' A','Iz = '+f(Iz),'c3')}</div>
+ <div class="row"><span>Оптовареност Ib/Iz</span><b>${f(c.Ib/Iz*100,0)}%</b></div><div class="bar"><i style="width:${Math.min(100,c.Ib/Iz*100)}%"></i></div>
+ <div class="row"><span>Пад на напон</span><b class="${d<=l?'ok':'bad'}">${f(d,2)}% (${f(d*c.U/100,1)} V)</b></div><div class="bar"><i style="width:${Math.min(100,d/l*100)}%"></i></div>
+ ${(()=>{const b=brk(c);return b.m?row('Тип','Компактна (MCCB) '+b.pol)+row('Подесување Ir',c.In+' A (0.8–1×)')+row('Моментна Ii','≈ '+c.In*10+' A (5–10×Ir)')+row('Капацитет Icu','≥ струја на куса врска (25–36 kA)'):row('Тип','Автомат '+b.pol)})()}${sc(c)}${row('Услов','Ib '+f(c.Ib)+' ≤ In '+c.In+' ≤ Iz '+f(Iz))}
+ ${c.r.n>1?'<p class="note">Паралелни кабли: ист пресек, ист материјал и иста должина за секој. Секој кабел е со '+c.r.S+' mm² и се споени на двата краја.</p>':''}${(()=>{const t=ats(c);if(!t)return '<p class="note">Резервно напојување (агрегат или втор довод) бара ATS склопка. Одбери го горе.</p>';return '<div class="row"><span>ATS / преклопник</span><b class="c2">'+t.pol+' '+(t.a||'>630')+' A</b></div>'+(t.g?'<div class="row"><span>Агрегат (мин.)</span><b>'+f(t.kva,0)+' kVA</b></div>':'')+'<p class="note">ATS мора да е со механичка и електрична блокада (мрежа и агрегат никогаш заедно). '+(c.ph==1?'':'4P (префрла и нула) спречува проблеми со нула и заземјување. ')+'Рачен преклопник I-0-II за куќи, автоматска ATS (АВР) за критични потрошувачи. Категорија AC-33B. Агрегатот димензионирај и за струја на стартување на мотори.</p>'})()}<p class="note">За струја над 125 A се користи компактна автомат склопка (MCCB) со подесива заштита, 3P без прекинување на нула или 4P (3P+N) со прекинување. Автомат крива B за осветлување/приклучници, C за општо, D за мотори и трансформатори. Приклучниците бараат FI 30 mA.</p>`}
+
+function Tb(){const c=calc(),o=cfg(c.ph);let h='<table><tr><th>mm²</th><th>Iz</th><th>Макс. осиг.</th><th>Макс. kW</th></tr>';
+ SEC.forEach(S=>{if(v('mat')==='al'&&S<16)return;const z=iz(S,o),In=[...STD].reverse().find(x=>x<=z)||0,P=(c.ph==1?1:Math.sqrt(3))*c.U*In*c.cos/1000;
+ h+=`<tr class="${c.r&&c.r.S===S?'sel':''}"><td><b>${S}</b></td><td>${f(z)} A</td><td>${In} A</td><td class="c3">${f(P)} kW</td></tr>`});
+ $('t_out').innerHTML=h+'</table><p class="note">Поставки и cos φ од главниот калкулатор. Означениот ред е препорачаниот кабел.</p>'}
+
+function spd(){const t1=+v('oh')||+v('lps'),ph=+v('ph'),tt=v('net')==='TT';return{typ:t1?'Тип 1+2':'Тип 2',iw:t1?'Iimp ≥ 12.5 kA/пол':'In ≥ 20 kA (8/20)',conf:tt?(ph==1?'1+1':'3+1'):(ph==1?'1P+N':'3P+N')}}
+function S(){const c=calc(),sp=spd();if(!c.r){$('s_out').innerHTML='<p class="bad">Нема решение.</p>';return}
+ const ph=c.ph,B=(x,y,w,h,col,t1,t2)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="none" stroke="${col}" stroke-width="2"/><text x="${x+w/2}" y="${y+22}" fill="${col}" font-size="13" text-anchor="middle" font-weight="700">${t1}</text><text x="${x+w/2}" y="${y+42}" fill="currentColor" font-size="12" text-anchor="middle">${t2}</text>`;
+ $('s_out').innerHTML=`<svg viewBox="0 0 360 340" font-family="system-ui,sans-serif" style="color:var(--tx)">
+ <line x1="180" y1="10" x2="180" y2="330" stroke="var(--cy)" stroke-width="3"/>
+ <text x="190" y="22" fill="var(--mu)" font-size="12">${ph==1?'L+N+PE 230V':'3P+N+PE 400V'} / 50Hz</text>
+ ${B(100,40,160,56,'var(--ac)',brk(c).lab+' '+brk(c).pol,'Ib '+f(c.Ib)+' A')}
+ ${B(100,112,160,56,'var(--cy)',brk(c).fi,c.fi?'IΔn = 30 mA':'IΔn 30–300 mA')}
+ <line x1="180" y1="150" x2="40" y2="150" stroke="var(--bad)" stroke-dasharray="4"/>
+ ${B(10,176,150,56,'var(--bad)','SPD '+sp.typ,sp.conf+', Uc 275 V')}
+ ${(()=>{const t=ats(c);return t?B(200,176,150,56,'var(--ac)','ATS '+t.pol+' '+t.a+' A',t.g?'агрегат '+f(t.kva,0)+' kVA':'втор довод')+'<line x1="180" y1="204" x2="200" y2="204" stroke="var(--ac)" stroke-dasharray="4"/>':''})()}
+ ${B(100,250,160,56,'var(--ok)',lab(c.r,ph)+' mm² '+(v('mat')==='cu'?'Cu':'Al'),'ΔU '+f(c.r.d,2)+'% · '+v('len')+' m')}
+ <text x="180" y="326" fill="var(--mu)" font-size="12" text-anchor="middle">Ib ${f(c.Ib)} ≤ In ${c.In} ≤ Iz ${f(c.r.Iz)}</text></svg>
+ <p class="note">SPD се става по главниот автомат, со PE ≥ 16 mm² Cu и кратки приклучни жици.</p>`}
+
+function P(){const c=calc(),sp=spd();
+ $('p_out').innerHTML=row('Препорака',`<span class="c2">${sp.typ}</span>`)+row('Одвод',sp.iw)+row('Конфигурација',sp.conf)+row('Uc / Up','≥ 275 V / ≤ 1.5 kV')+row('Предосигурувач',c.In>125?'gG 125 A или по упатство':'до '+c.In+' A / по упатство')+(+v('sens')?row('Дополнително','Тип 3 до осетлива опрема'):'')+
+ '<p class="note">Тип 1+2 при надземна линија или громобран. Вкупна должина на приклучни жици < 0.5 m, потребно е изедначување на потенцијали (IEC 62305 / 60364-5-53).</p>'}
+
+function M(){const ph=+v('mph'),U=ph==1?230:400,cos=+v('mc'),Ib=+v('mp')*1000/((ph==1?1:Math.sqrt(3))*U*cos*+v('me')),Is=Ib*+v('ms');
+ const In=STD.find(x=>x>=Ib*1.25)||0,r=pick(Ib,In,ph,cos),crv=+v('ms')>=7?'D':'C';
+ $('m_out').innerHTML=row('Номинална струја Ib',f(Ib)+' A')+row('Струја на стартување',f(Is,0)+' A')+row('Моторна склопка (подесување)','≈ '+f(Ib)+' A')+row('Автомат (алтернатива)',crv+' '+In+' A')+row('Кабел',r?`<span class="c1">${lab(r,ph)} mm²</span> (ΔU ${f(r.d,2)}%)`:'<span class="bad">нема</span>')+'<p class="note">За долги стартувања користи моторна склопка со термичка заштита. Автоматот ≈ 1.25×Ib.</p>'}
+
+const all=()=>{A();Tb();S();P();M()};
+document.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',all));
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===b.dataset.t));$('inp').style.display=['p','m','f'].includes(b.dataset.t)&&b.dataset.t!=='m'?'none':''});
+all();
+</script></body></html>
