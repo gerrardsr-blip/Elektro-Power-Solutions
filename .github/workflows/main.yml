@@ -18,7 +18,10 @@ jobs:
       - run: npm install
       - run: mkdir -p www && cp index.html www/
       - run: npx cap add android
-      - run: mkdir -p assets && cp icon.png assets/icon-only.png && cp icon.png assets/icon-foreground.png
+      - run: |
+          mkdir -p assets
+          convert icon.png -resize 1024x1024 -background '#0b0d12' -gravity center -extent 1024x1024 assets/icon-only.png
+          convert icon.png -resize 640x640 -background none -gravity center -extent 1024x1024 assets/icon-foreground.png
       - run: npx @capacitor/assets generate --android --iconBackgroundColor '#0b0d12' --iconBackgroundColorDark '#0b0d12'
       - run: npx cap sync android
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
