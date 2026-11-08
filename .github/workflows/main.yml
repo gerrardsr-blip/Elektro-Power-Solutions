@@ -19,10 +19,17 @@ jobs:
       - run: mkdir -p www && cp index.html www/
       - run: npx cap add android
       - run: |
-          mkdir -p assets
-          convert icon.png -resize 1024x1024 -background '#0b0d12' -gravity center -extent 1024x1024 assets/icon-only.png
-          convert icon.png -resize 640x640 -background none -gravity center -extent 1024x1024 assets/icon-foreground.png
-      - run: npx @capacitor/assets generate --android --iconBackgroundColor '#0b0d12' --iconBackgroundColorDark '#0b0d12'
+          set -e
+          convert icon.png -crop 640x640+175+148 +repage crop.png
+          for d in "mdpi 48 108" "hdpi 72 162" "xhdpi 96 216" "xxhdpi 144 324" "xxxhdpi 192 432"; do
+            set -- $d
+            r=android/app/src/main/res/mipmap-$1
+            convert crop.png -resize $2x$2 $r/ic_launcher.png
+            convert crop.png -resize $2x$2 $r/ic_launcher_round.png
+            s=$(($3*60/100))
+            convert crop.png -resize ${s}x${s} -background '#0b0d12' -gravity center -extent $3x$3 $r/ic_launcher_foreground.png
+          done
+          sed -i 's/#[0-9A-Fa-f]\{6\}/#0B0D12/' android/app/src/main/res/values/ic_launcher_background.xml
       - run: npx cap sync android
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
